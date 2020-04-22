@@ -27,6 +27,6 @@ jobs:
         uses: buildsville/add-remove-label@v1
         with:
           token: ${{secrets.GITHUB_TOKEN}}
-          labels: WFR
+          label: WFR
           type: remove
 ```
