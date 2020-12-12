@@ -15,23 +15,36 @@ var core = require("@actions/core");
 var github = require("@actions/github");
 var token = core.getInput("token");
 var type = core.getInput("type");
-var label = core.getInput("label");
+var inputLabel = core.getInput("label");
+var inputLabels = core.getInput("labels");
+var labels;
+if (inputLabels) {
+    labels = inputLabels.split(",").map(function (x) { return x.trim(); }).filter(function (x) { return x; });
+}
+else {
+    labels = [inputLabel];
+}
 function editLabel() {
     var client = new github.GitHub(token);
     var context = github.context;
     var pr = context.payload.pull_request;
-    if (!pr) {
+    var issue = context.payload.issue;
+    var target = pr || issue;
+    if (!target) {
         return;
     }
     if (type == "add") {
-        client.issues.addLabels(__assign(__assign({}, context.repo), { issue_number: pr.number, labels: [label] }))["catch"](function (e) {
+        client.issues.addLabels(__assign(__assign({}, context.repo), { issue_number: target.number, labels: labels }))["catch"](function (e) {
             console.log(e.message);
         });
     }
     if (type == "remove") {
-        client.issues.removeLabel(__assign(__assign({}, context.repo), { issue_number: pr.number, name: label }))["catch"](function (e) {
-            console.log(e.message);
-        });
+        for (var _i = 0, labels_1 = labels; _i < labels_1.length; _i++) {
+            var label = labels_1[_i];
+            client.issues.removeLabel(__assign(__assign({}, context.repo), { issue_number: target.number, name: label }))["catch"](function (e) {
+                console.log(e.message);
+            });
+        }
     }
 }
 editLabel();

@@ -8,9 +8,13 @@ inputs:
     description: 'github token'
     required: true
     default: ''
+  labels:
+    description: 'labels to edit'
+    required: false
+    default: ''
   label:
     description: 'label to edit'
-    required: true
+    required: false
     default: ''
   type:
     description: 'add or remove'
