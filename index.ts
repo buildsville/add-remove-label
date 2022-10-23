@@ -3,20 +3,29 @@ import * as github from '@actions/github'
 
 const token:string = core.getInput("token")
 const type:string = core.getInput("type")
-const label:string = core.getInput("label")
+const inputLabel:string = core.getInput("label")
+const inputLabels:string = core.getInput("labels")
+let labels:string[]
+if (inputLabels) {
+    labels = inputLabels.split(",").map(x => x.trim()).filter(x => x)
+} else {
+    labels = [inputLabel]
+}
 
 function editLabel(){
-    let client = new github.GitHub(token)
+    let client = github.getOctokit(core.getInput('token'))
     let context = github.context
     let pr = context.payload.pull_request
-    if (!pr) {
+    let issue = context.payload.issue
+    let target = pr || issue
+    if (!target) {
         return
     }
     if ( type == "add" ){
-        client.issues.addLabels({
+        client.rest.issues.addLabels({
             ...context.repo,
-            issue_number: pr.number,
-            labels: [label]
+            issue_number: target.number,
+            labels: labels
         }).catch(
             e => {
                 console.log(e.message)
@@ -24,15 +33,17 @@ function editLabel(){
         )
     }
     if ( type == "remove" ){
-        client.issues.removeLabel({
-            ...context.repo,
-            issue_number: pr.number,
-            name: label
-        }).catch(
-            e => {
-                console.log(e.message)
-            }
-        )
+        for (const label of labels) {
+            client.rest.issues.removeLabel({
+                ...context.repo,
+                issue_number: target.number,
+                name: label
+            }).catch(
+                e => {
+                    console.log(e.message)
+                }
+            )
+        }
     }
 }
 editLabel()
