@@ -25,7 +25,7 @@ else {
     labels = [inputLabel];
 }
 function editLabel() {
-    var client = new github.GitHub(token);
+    var client = github.getOctokit(core.getInput('token'));
     var context = github.context;
     var pr = context.payload.pull_request;
     var issue = context.payload.issue;
@@ -34,14 +34,14 @@ function editLabel() {
         return;
     }
     if (type == "add") {
-        client.issues.addLabels(__assign(__assign({}, context.repo), { issue_number: target.number, labels: labels }))["catch"](function (e) {
+        client.rest.issues.addLabels(__assign(__assign({}, context.repo), { issue_number: target.number, labels: labels }))["catch"](function (e) {
             console.log(e.message);
         });
     }
     if (type == "remove") {
         for (var _i = 0, labels_1 = labels; _i < labels_1.length; _i++) {
             var label = labels_1[_i];
-            client.issues.removeLabel(__assign(__assign({}, context.repo), { issue_number: target.number, name: label }))["catch"](function (e) {
+            client.rest.issues.removeLabel(__assign(__assign({}, context.repo), { issue_number: target.number, name: label }))["catch"](function (e) {
                 console.log(e.message);
             });
         }

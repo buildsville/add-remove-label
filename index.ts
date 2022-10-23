@@ -13,7 +13,7 @@ if (inputLabels) {
 }
 
 function editLabel(){
-    let client = new github.GitHub(token)
+    let client = github.getOctokit(core.getInput('token'))
     let context = github.context
     let pr = context.payload.pull_request
     let issue = context.payload.issue
@@ -22,7 +22,7 @@ function editLabel(){
         return
     }
     if ( type == "add" ){
-        client.issues.addLabels({
+        client.rest.issues.addLabels({
             ...context.repo,
             issue_number: target.number,
             labels: labels
@@ -34,7 +34,7 @@ function editLabel(){
     }
     if ( type == "remove" ){
         for (const label of labels) {
-            client.issues.removeLabel({
+            client.rest.issues.removeLabel({
                 ...context.repo,
                 issue_number: target.number,
                 name: label
