@@ -30,7 +30,7 @@ jobs:
     name: remove label
     steps:
       - name: removelabel
-        uses: buildsville/add-remove-label@v2.0.0
+        uses: buildsville/add-remove-label@v2.0.1
         with:
           token: ${{secrets.GITHUB_TOKEN}}
           labels: WFR, ASAP

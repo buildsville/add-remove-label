@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "lib": ["ES2015","ES2018"],
-    "target": "ES2015",
+    "lib": ["ES2021"],
+    "target": "ES2021",
     "module": "CommonJS"
   }
 }
